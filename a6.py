@@ -8,7 +8,6 @@ from tkinter import simpledialog, messagebox, filedialog
 import sys
 
 
-
 def process_text(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         text = file.read()
@@ -42,7 +41,8 @@ def write_tuple_map_to_file(tuple_map, file_path):
     with open(file_path, 'w', encoding='utf-8') as file:
         for key, value in tuple_map.items():
             x, y = key
-            file.write(f"{x} {y} {value}\n")
+            if x != y:
+                file.write(f"{x} {y} {value}\n")
 
 
 # 绘制有向图的函数
@@ -95,28 +95,31 @@ def read_graph_from_file(file_path):
 # 查找两个节点之间的直接中继节点
 def search_direct_intermediate_nodes(graph, start_node, end_node):
     intermediate_nodes = set()
-    if start_node not in graph or end_node not in graph:
+    all_nodes = set(graph.keys()) | set(node for edges in graph.values() for node, _ in edges)
+    if start_node not in all_nodes or end_node not in all_nodes:
         return "没有" + start_node + "或" + end_node
-    if end_node in graph.get(start_node, []):
+    if any(neighbor == end_node for neighbor, _ in graph.get(start_node, [])):
         return start_node + "和" + end_node + "之间没有桥接词"
     for neighbor, _ in graph.get(start_node, []):
-        if (end_node, _) in graph.get(neighbor, []):
+        if any(next_hop == end_node for next_hop, _ in graph.get(neighbor, [])):
             intermediate_nodes.add(neighbor)
     if not intermediate_nodes:
         return start_node + "和" + end_node + "之间没有桥接词"
     return start_node + "和" + end_node + "之间的桥接词是" + ", ".join(intermediate_nodes)
 
-# 查找两个节点之间的直接中继节点
+# 两个节点之间的直接中继节点
 def insert_direct_intermediate_nodes(graph, start_node, end_node):
+    # print(start_node + " " + end_node)
     intermediate_nodes = set()
-    if start_node not in graph or end_node not in graph:
+    all_nodes = set(graph.keys()) | set(node for edges in graph.values() for node, _ in edges)
+    if start_node not in all_nodes or end_node not in all_nodes:
         return None
-    if end_node in graph.get(start_node, []):
+    if any(neighbor == end_node for neighbor, _ in graph.get(start_node, [])):
         return set()
     for neighbor, _ in graph.get(start_node, []):
-        if (end_node, _) in graph.get(neighbor, []):
+        if any(next_hop == end_node for next_hop, _ in graph.get(neighbor, [])):
             intermediate_nodes.add(neighbor)
-
+    print(intermediate_nodes)
     return intermediate_nodes
 
 # 处理英文语句，插入直接中继节点
@@ -125,11 +128,10 @@ def insert_bridge_words(graph, sentence):
     new_sentence = []
     for i in range(len(words) - 1):
         new_sentence.append(words[i])
-        if words[i] in graph and words[i + 1] in graph:
-            direct_intermediate_nodes = insert_direct_intermediate_nodes(graph, words[i], words[i + 1])
-            if direct_intermediate_nodes:
-                intermediate_node = random.choice(list(direct_intermediate_nodes))
-                new_sentence.append(intermediate_node)
+        direct_intermediate_nodes = insert_direct_intermediate_nodes(graph, words[i], words[i + 1])
+        if direct_intermediate_nodes:
+            intermediate_node = random.choice(list(direct_intermediate_nodes))
+            new_sentence.append(intermediate_node)
     new_sentence.append(words[-1])
     for i in range(len(new_sentence)):
         if i < len(words):
@@ -254,7 +256,6 @@ def write_visited_nodes_to_file(visited_nodes):
             file.write(node + ' ')
     print(f"已将遍历的节点写入到文件 {file_path}")
 
-
 class RedirectText(object):
     def __init__(self, widget):
         self.widget = widget
@@ -267,7 +268,6 @@ class RedirectText(object):
 
     def flush(self):
         pass
-
 
 class CommandLineApp(tk.Tk):
     def __init__(self):
@@ -388,3 +388,5 @@ class CommandLineApp(tk.Tk):
 if __name__ == "__main__":
     app = CommandLineApp()
     app.mainloop()
+    os.remove("./graph/graph.txt")
+    os.remove("./path/path.txt")
