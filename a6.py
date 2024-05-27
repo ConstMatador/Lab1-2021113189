@@ -191,7 +191,7 @@ def draw_shortest_path(G, source, target, canvas, shortest_path=None):
     if shortest_path:
         path_edges = list(zip(shortest_path, shortest_path[1:]))
         nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color='blue', width=2)
-    plt.title("带权重的有向图和突出显示的最短路径")
+    plt.title("")
     plt.savefig("shortest_path.png")
     plt.close()
     canvas.delete("all")
