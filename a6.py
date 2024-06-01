@@ -247,7 +247,7 @@ def random_traversal_with_edges(G):
             print("用户选择停止遍历。")
             break
     return visited_nodes, visited_edges
-
+    
 # 将访问的节点写入文件的函数
 def write_visited_nodes_to_file(visited_nodes):
     file_path = "./path/path.txt"
