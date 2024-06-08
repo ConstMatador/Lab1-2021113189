@@ -78,6 +78,7 @@ def draw_graph(file_path, canvas):
     canvas.image = img
     canvas.create_image(0, 0, anchor=tk.NW, image=img)
 
+
 # 读取文件，构建有向图
 def read_graph_from_file(file_path):
     G = {}
@@ -91,6 +92,7 @@ def read_graph_from_file(file_path):
                     G[source] = []
                 G[source].append((target, weight))
     return G
+
 
 # 查找两个节点之间的直接中继节点
 def search_direct_intermediate_nodes(graph, start_node, end_node):
@@ -107,6 +109,7 @@ def search_direct_intermediate_nodes(graph, start_node, end_node):
         return start_node + "和" + end_node + "之间没有桥接词"
     return start_node + "和" + end_node + "之间的桥接词是" + ", ".join(intermediate_nodes)
 
+
 # 两个节点之间的直接中继节点
 def insert_direct_intermediate_nodes(graph, start_node, end_node):
     # print(start_node + " " + end_node)
@@ -121,6 +124,7 @@ def insert_direct_intermediate_nodes(graph, start_node, end_node):
             intermediate_nodes.add(neighbor)
     print(intermediate_nodes)
     return intermediate_nodes
+
 
 # 处理英文语句，插入直接中继节点
 def insert_bridge_words(graph, sentence):
@@ -137,8 +141,8 @@ def insert_bridge_words(graph, sentence):
         if i < len(words):
             if words[i].istitle():
                 new_sentence[i] = new_sentence[i].capitalize()
-
     return ' '.join(new_sentence)
+
 
 # 从文件中读取图并构建有向图的函数
 def get_graph(file_path):
@@ -156,6 +160,7 @@ def get_graph(file_path):
         print(f"发生错误: {e}")
     return G
 
+
 # 查找单个节点到所有其他节点的最短路径
 def find_all_shortest_paths(G, source):
     try:
@@ -164,6 +169,7 @@ def find_all_shortest_paths(G, source):
     except nx.NodeNotFound as e:
         print(e)
         return None
+
 
 # 查找两个节点之间最短路径的函数
 def find_shortest_path(G, source, target):
@@ -176,6 +182,7 @@ def find_shortest_path(G, source, target):
     except nx.NodeNotFound as e:
         print(e)
         return None
+
 
 # 绘制有向图并突出显示最短路径的函数
 def draw_shortest_path(G, source, target, canvas, shortest_path=None):
@@ -199,6 +206,7 @@ def draw_shortest_path(G, source, target, canvas, shortest_path=None):
     canvas.image = img
     canvas.create_image(0, 0, anchor=tk.NW, image=img)
 
+
 # 绘制有向图并突出显示路径的函数
 def draw_graph_with_path(G, path, canvas):
     # pos = nx.spring_layout(G, k=0.1, iterations=100)
@@ -218,6 +226,7 @@ def draw_graph_with_path(G, path, canvas):
     img = tk.PhotoImage(file="path_graph.png")
     canvas.image = img
     canvas.create_image(0, 0, anchor=tk.NW, image=img)
+
 
 # 执行随机遍历并记录边的函数
 def random_traversal_with_edges(G):
@@ -248,6 +257,7 @@ def random_traversal_with_edges(G):
             break
     return visited_nodes, visited_edges
     
+
 # 将访问的节点写入文件的函数
 def write_visited_nodes_to_file(visited_nodes):
     file_path = "./path/path.txt"
@@ -255,6 +265,7 @@ def write_visited_nodes_to_file(visited_nodes):
         for node in visited_nodes:
             file.write(node + ' ')
     print(f"已将遍历的节点写入到文件 {file_path}")
+
 
 class RedirectText(object):
     def __init__(self, widget):
@@ -268,6 +279,7 @@ class RedirectText(object):
 
     def flush(self):
         pass
+
 
 class CommandLineApp(tk.Tk):
     def __init__(self):
@@ -314,11 +326,13 @@ class CommandLineApp(tk.Tk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=100)
 
+
     def update_output(self, text):
         self.output_text.configure(state='normal')
         self.output_text.insert(tk.END, text + "\n")
         self.output_text.configure(state='disabled')
         self.output_text.see(tk.END)
+
 
     def choose_file(self):
         file_path = filedialog.askopenfilename()
@@ -332,6 +346,7 @@ class CommandLineApp(tk.Tk):
             except Exception as e:
                 self.update_output(f"处理文件时发生错误: {e}")
 
+
     def query_bridge_words(self):
         if not os.path.exists('./graph/graph.txt'):
             self.update_output("请先生成有向图 (选择功能 1)。")
@@ -343,6 +358,7 @@ class CommandLineApp(tk.Tk):
             result = search_direct_intermediate_nodes(graph, start_node, end_node)
             self.update_output(result)
 
+
     def generate_new_text(self):
         if not os.path.exists('./graph/graph.txt'):
             self.update_output("请先生成有向图 (选择功能 1)。")
@@ -352,6 +368,7 @@ class CommandLineApp(tk.Tk):
             graph = read_graph_from_file('./graph/graph.txt')
             processed_sentence = insert_bridge_words(graph, input_sentence)
             self.update_output("处理后的英文语句: " + processed_sentence)
+
 
     def compute_shortest_path(self):
         if not os.path.exists('./graph/graph.txt'):
@@ -374,6 +391,7 @@ class CommandLineApp(tk.Tk):
                         self.update_output("在 " + source_node + " 和 " + target_node + " 之间没有路径")
                     else:
                         draw_shortest_path(graph, source_node, target_node, self.canvas, shortest_path)
+
 
     def random_walk(self):
         if not os.path.exists('./graph/graph.txt'):
