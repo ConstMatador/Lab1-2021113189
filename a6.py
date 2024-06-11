@@ -103,7 +103,7 @@ def search_direct_intermediate_nodes(graph, start_node, end_node):
     if any(neighbor == end_node for neighbor, _ in graph.get(start_node, [])):
         return start_node + "和" + end_node + "之间没有桥接词"
     for neighbor, _ in graph.get(start_node, []):
-        if any(next_hop == end_node for next_hop, _ in graph.get(neighbor, [])):
+        if any(next_hop == end_node for next_hop, _ in graph.get(neighbor, [])):    
             intermediate_nodes.add(neighbor)
     if not intermediate_nodes:
         return start_node + "和" + end_node + "之间没有桥接词"
@@ -255,6 +255,8 @@ def random_traversal_with_edges(G):
         if not continue_walk:
             print("用户选择停止遍历。")
             break
+    print(visited_nodes)
+    print(visited_edges)
     return visited_nodes, visited_edges
     
 
