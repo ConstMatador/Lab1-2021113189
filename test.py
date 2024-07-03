@@ -1,6 +1,6 @@
 import unittest
 
-from a6 import search_direct_intermediate_nodes
+from search_direct_intermediate_nodes import search_direct_intermediate_nodes
 
 class TestSearchDirectIntermediateNodes(unittest.TestCase):
     def test_1(self):
